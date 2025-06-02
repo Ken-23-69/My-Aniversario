@@ -1,0 +1,197 @@
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #232526 0%, #414345 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+}
+.container {
+    /* Quitar fondo, padding, borde y sombra */
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+h1 {
+    /* Si existe, no se mostrará */
+    display: none;
+}
+#contador {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3em; /* menos espacio vertical */
+    width: 100%;
+    box-sizing: border-box;
+}
+#contador span {
+    font-size: 1em;
+    margin: 0.1em 0;
+}
+#contador span:first-child {
+    font-size: 9vw;
+    font-weight: bold;
+    color: #fff;
+    line-height: 1.05;
+    margin-bottom: 0.05em; /* aún menos espacio debajo de los días */
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-end;
+    width: 100%;
+    text-align: right;
+    padding-right: 10vw; /* más a la derecha en mobile */
+}
+#contador .dias-label {
+    margin-left: 0.5em;
+    font-size: 0.25em;
+    font-weight: 400;
+    color: #e6e6e6;
+    letter-spacing: 0.1em;
+    padding-right: 2vw; /* mueve "días" más a la derecha */
+}
+#contador small {
+    font-size: 0.3em;
+    font-weight: normal;
+    color: #e6e6e6;
+    letter-spacing: 0.1em;
+}
+
+@media (min-width: 601px) {
+    #contador span:first-child {
+        padding-right: 0;
+        justify-content: center;
+        text-align: center;
+    }
+    #contador .dias-label {
+        padding-right: 0;
+    }
+}
+
+/* Flip clock style for time boxes */
+.flip-row {
+    display: flex;
+    gap: 0.3vw; /* menos espacio horizontal entre cajas */
+    margin-top: 0; /* pegado a los días */
+}
+.flip-box {
+    background: linear-gradient(160deg, #23243a 60%, #2d2e4a 100%);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px #0004;
+    width: 3vw;
+    min-width: 28px;
+    height: 4vw;
+    min-height: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: 1px solid #3a3b5a;
+    transition: transform 0.1s;
+}
+.flip-box:hover {
+    transform: scale(1.04) translateY(-2px);
+    box-shadow: 0 8px 24px #000b, 0 2px 0 #fff2 inset;
+}
+.flip-box .flip-number {
+    color: #f8f8fa;
+    font-size: 1.1vw;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.04em;
+}
+.flip-box .flip-label {
+    color: #b0b2c3;
+    font-size: 0.5vw;
+    font-weight: 400;
+    margin-top: 0.1em;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+@media (max-width: 600px) {
+    #contador span:first-child {
+        font-size: 15vw;
+        justify-content: flex-end;
+        text-align: right;
+        padding-right: 6vw;
+    }
+    .flip-box {
+        width: 10vw;
+        height: 11vw;
+        min-width: 22px;
+        min-height: 22px;
+    }
+    .flip-box .flip-number {
+        font-size: 3vw;
+    }
+    .flip-box .flip-label {
+        font-size: 1.2vw;
+    }
+    .flip-row {
+        gap: 1vw;
+    }
+    .container {
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
+    }
+    .titulo-superior {
+        text-align: center;
+        width: 100%;
+    }
+    #contador {
+        align-items: center !important;
+        justify-content: center !important;
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100%;
+    }
+    #contador span:first-child {
+        justify-content: center !important;
+        text-align: center !important;
+        padding-right: 0 !important;
+    }
+    .mensaje-inferior {
+        text-align: center;
+        width: 100%;
+    }
+}
+.titulo-superior {
+    width: 100%;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: 500;
+    color: #fff;
+    margin-bottom: 0.5em;
+    letter-spacing: 0.03em;
+    text-shadow: 0 2px 8px #0007;
+}
+@media (max-width: 600px) {
+    .titulo-superior {
+        font-size: 1.1em;
+        margin-bottom: 0.3em;
+    }
+}
+.mensaje-inferior {
+    width: 100%;
+    text-align: center;
+    font-size: 1.1em;
+    font-weight: 400;
+    color: #fff;
+    margin-top: 2em;
+    letter-spacing: 0.02em;
+    text-shadow: 0 2px 8px #0007;
+}
+@media (max-width: 600px) {
+    .mensaje-inferior {
+        font-size: 1em;
+        margin-top: 1.3em;
+    }
+}

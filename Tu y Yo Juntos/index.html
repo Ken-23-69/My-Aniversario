@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="Css/estilos.css">
+    <title>Nuestro Tiempo Juntos</title>
+    <style>
+    /* Animación de dibujo para el SVG */
+    .svg-draw path, .svg-draw line, .svg-draw polyline, .svg-draw polygon, .svg-draw rect, .svg-draw circle, .svg-draw ellipse {
+        stroke: #fff !important;
+        stroke-width: 2.2;
+        fill: none;
+        stroke-dasharray: 1000;
+        stroke-dashoffset: 1000;
+        animation: draw-svg 3.5s ease-in-out forwards;
+    }
+    @keyframes draw-svg {
+        to {
+            stroke-dashoffset: 0;
+        }
+    }
+    @keyframes carta-mueve {
+        0%, 100% { transform: translateX(0); }
+        10% { transform: translateX(-8px); }
+        20% { transform: translateX(8px); }
+        30% { transform: translateX(-6px); }
+        40% { transform: translateX(6px); }
+        50% { transform: translateX(-4px); }
+        60% { transform: translateX(4px); }
+        70% { transform: translateX(-2px); }
+        80% { transform: translateX(2px); }
+        90% { transform: translateX(0); }
+    }
+    #svg-carta {
+        display: none;
+    }
+    #svg-carta.svg-draw {
+        display: block;
+    }
+    #svg-carta.mueve {
+        animation: carta-mueve 1.2s ease-in-out 1;
+    }
+    .mensaje-inferior {
+        opacity: 0;
+        transition: opacity 0.7s;
+    }
+    .mensaje-inferior.visible {
+        opacity: 1;
+    }
+    /* Estilos para la hoja emergente */
+    #hoja-mensaje {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+        pointer-events: none;
+    }
+    #hoja-contenido {
+        background: #fff;
+        color: #222;
+        border-radius: 18px;
+        box-shadow: 0 8px 40px #0008;
+        padding: 2.5em 1.5em 2em 1.5em;
+        max-width: 90vw;
+        width: 340px;
+        min-height: 220px;
+        font-size: 1.15em;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        text-align: center;
+        transform: scaleY(0) translateY(60px);
+        opacity: 0;
+        transition: transform 0.7s cubic-bezier(.77,0,.18,1.01), opacity 0.5s;
+        pointer-events: auto;
+        position: relative;
+    }
+    #cerrar-hoja {
+        position: absolute;
+        top: 0.7em;
+        right: 1em;
+        background: none;
+        border: none;
+        font-size: 1.5em;
+        cursor: pointer;
+        color: #e75480;
+        font-weight: bold;
+        line-height: 1;
+        display: none;
+    }
+    .degradado-borde {
+        stroke: url(#degradado-carta);
+        filter: url(#glow);
+    }
+    /* Fondo animado */
+    .fondo-animado {
+        animation: fondo-mov 18s linear infinite;
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%, #a1c4fd 100%);
+        background-size: 400% 400%;
+    }
+    @keyframes fondo-mov {
+        0% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+    .fondo-animado-verde {
+        animation: fondo-mov-verde 18s linear infinite;
+        background: linear-gradient(135deg, #e0ffe6 0%, #b2f7c1 100%, #d2f7ff 100%);
+        background-size: 400% 400%;
+    }
+    @keyframes fondo-mov-verde {
+        0% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+    body {
+        transition: background 1.2s cubic-bezier(.77,0,.18,1.01);
+    }
+    .fondo-animado,
+    .fondo-animado-verde {
+        transition: background 1.2s cubic-bezier(.77,0,.18,1.01);
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="titulo-superior">
+            <span id="typing-text"></span>
+        </div>
+        <div id="contador"></div>
+        <div class="mensaje-inferior" id="mensaje-inferior">
+            <!-- El mensaje se llenará por JS -->
+            <div id="mensaje-extra" style="margin-top:0.7em;font-size:1em;font-weight:400;color:#fff;text-shadow:0 2px 8px #0007;opacity:0;transition:opacity 0.7s;">
+                Esto es para ti 👇
+            </div>
+        </div>
+        <div style="width:100%;display:flex;justify-content:center;margin-top:3em;flex-direction:column;align-items:center;position:relative;">
+            <svg id="svg-carta" width="120" height="auto" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="degradado-carta" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#39ff14"/>
+                        <stop offset="50%" stop-color="#00fff7"/>
+                        <stop offset="100%" stop-color="#ff00ea"/>
+                    </linearGradient>
+                    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+                        <feGaussianBlur stdDeviation="3.5" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                <path class="degradado-borde" d="M10,30 L110,30 L110,90 L10,90 Z"
+                    stroke="url(#degradado-carta)" filter="url(#glow)" />
+                <polyline class="degradado-borde" points="10,30 60,70 110,30"
+                    stroke="url(#degradado-carta)" filter="url(#glow)" />
+                <!-- ...otros elementos de tu SVG... -->
+            </svg>
+            <div id="dame-click" style="margin-top:1em;color:#fff;font-size:1.1em;font-weight:500;text-shadow:0 2px 8px #0007;opacity:0;transition:opacity 0.7s;">
+                Presiona la carta
+            </div>
+            <!-- Contenedor para los corazones animados -->
+            <div id="corazones-container" style="position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:200;"></div>
+        </div>
+    </div>
+    <!-- Hoja emergente con mensaje de amor -->
+    <div id="hoja-mensaje" style="position:fixed;left:0;top:0;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;z-index:100;pointer-events:none;">
+        <div id="hoja-contenido" style="
+            background: #fff;
+            color: #222;
+            border-radius: 18px;
+            box-shadow: 0 8px 40px #0008;
+            padding: 2.5em 1.5em 2em 1.5em;
+            max-width: 90vw;
+            width: 340px;
+            min-height: 220px;
+            font-size: 1.15em;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            text-align: center;
+            transform: scaleY(0) translateY(60px);
+            opacity: 0;
+            transition: transform 0.7s cubic-bezier(.77,0,.18,1.01), opacity 0.5s;
+            pointer-events: auto;
+            position: relative;
+        ">
+            <button id="cerrar-hoja" style="
+                position:absolute;top:0.7em;right:1em;
+                background:none;border:none;font-size:1.5em;cursor:pointer;color:#e75480;
+                font-weight:bold;line-height:1;display:none;" title="Cerrar">&times;</button>
+            <div style="margin-top:1.5em;">
+                <span id="typing-carta" style="display:block;margin-top:1em;min-height:5em;"></span>
+                <img id="foto-carta" src="Img/foto.jpg" alt="Foto especial" style="margin-top:1.5em;max-width:85%;border-radius:12px;box-shadow:0 4px 18px #0002;opacity:0;transition:none;">
+            </div>
+        </div>
+    </div>
+    <!-- Audio oculto para reproducir música -->
+    <audio id="audio-carta" src=""></audio>
+    <script src="Js/contador.js"></script>
+    <script>
+    // --- NUEVO: Leer parámetros de la URL ---
+    function getParams() {
+        const params = new URLSearchParams(window.location.search);
+        return {
+            fecha: params.get('fecha'), // formato YYYY-MM-DD
+            titulo: params.get('titulo'),
+            mensajeInferior: params.get('mensajeInferior'),
+            mensajeCarta: params.get('mensajeCarta'),
+            fotoURL: params.get('fotoURL'),
+            musicaURL: params.get('musicaURL')
+        };
+    }
+    const urlParams = getParams();
+
+    // --- NUEVO: Usar parámetros o valores por defecto ---
+    // Título typing
+    const texto = urlParams.titulo || "Estamos juntos hace";
+    const typingSpan = document.getElementById('typing-text');
+    let i = 0;
+    function typingEffect() {
+        if (i < texto.length) {
+            typingSpan.textContent += texto.charAt(i);
+            i++;
+            setTimeout(typingEffect, 90);
+        }
+    }
+    typingEffect();
+
+    // Mensaje inferior
+    const mensajeInferior = urlParams.mensajeInferior || "y han sido los mejores días de mi fokin vida jaja :)";
+    document.getElementById('mensaje-inferior').childNodes[0].textContent = mensajeInferior;
+
+    // Mensaje carta
+    let mensajeCarta = urlParams.mensajeCarta || `De corazon gracias por cada momento compartido, por tu sonrisa y por hacer mi vida tan especial.
+    Te amo mucho más de lo que las palabras pueden expresar. Realmente eres lo mejor que tengo y que tendre en esta Life </3`;
+
+    // Foto carta
+    const fotoCarta = document.getElementById('foto-carta');
+    if (urlParams.fotoURL) {
+        fotoCarta.src = urlParams.fotoURL;
+    }
+
+    // Música carta
+    const audioCarta = document.getElementById('audio-carta');
+    if (urlParams.musicaURL) {
+        audioCarta.src = urlParams.musicaURL;
+    }
+
+    // --- NUEVO: Pasar fecha personalizada a contador.js ---
+    window._contadorFechaParam = urlParams.fecha; // global temporal
+
+    // Mostrar mensaje-inferior 2 segundos después de la animación del contador
+    window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        document.getElementById('mensaje-inferior').classList.add('visible');
+        // Mostrar "y esto es para ti" 2s después
+        setTimeout(() => {
+            document.getElementById('mensaje-extra').style.opacity = 1;
+        }, 2000);
+    }, 2300); // antes: 3300, ahora 1s antes
+
+    setTimeout(() => {
+            const carta = document.getElementById('svg-carta');
+            carta.classList.add('svg-draw');
+            setTimeout(() => {
+                carta.classList.add('mueve');
+                setTimeout(() => carta.classList.remove('mueve'), 1300);
+                // Mostrar "dame click" cuando la carta haya cargado y hecho su movimiento
+                setTimeout(() => {
+                    document.getElementById('dame-click').style.opacity = 1;
+                }, 300); // aparece justo después del movimiento
+            }, 3600);
+        }, 6300);
+
+        // Carta click: mostrar hoja, brotar corazones, reproducir música y cambiar fondo
+        document.getElementById('svg-carta').addEventListener('click', () => {
+            const hoja = document.getElementById('hoja-mensaje');
+            const contenido = document.getElementById('hoja-contenido');
+            hoja.style.pointerEvents = 'auto';
+            hoja.style.background = 'rgba(0,0,0,0.25)';
+            contenido.style.transform = 'scaleY(1) translateY(0)';
+            contenido.style.opacity = '1';
+            brotarCorazones();
+            // typing para el mensaje de la carta
+            const typingCarta = document.getElementById('typing-carta');
+            // --- FIX: limpiar mensaje y detener intervalos previos antes de iniciar typing y fade-in ---
+            typingCarta.textContent = "";
+            // Limpiar cualquier intervalo previo de fade-in de la foto
+            if (window._fotoFadeInterval) {
+                clearInterval(window._fotoFadeInterval);
+                window._fotoFadeInterval = null;
+            }
+            // Reiniciar opacidad de la foto
+            const foto = document.getElementById('foto-carta');
+            foto.style.opacity = 0;
+            // reproducir música
+            const audio = document.getElementById('audio-carta');
+            audio.currentTime = 0;
+            audio.play();
+            // Cambiar fondo a verde pastel animado con transición suave
+            document.body.style.transition = "background 1.2s cubic-bezier(.77,0,.18,1.01)";
+            document.body.style.background = "linear-gradient(135deg, #e0ffe6 0%, #b2f7c1 100%)";
+            activarFondoAnimado();
+            const cerrarBtn = document.getElementById('cerrar-hoja');
+            cerrarBtn.style.display = "none";
+            let typingDone = false;
+            let fotoDone = false;
+            // Mostrar foto con fade-in: inicia el conteo de 10s justo ahora
+            let op = 0;
+            window._fotoFadeInterval = setInterval(() => {
+                op += 0.01;
+                if (op >= 1) {
+                    op = 1;
+                    clearInterval(window._fotoFadeInterval);
+                    window._fotoFadeInterval = null;
+                    fotoDone = true;
+                    if (typingDone) cerrarBtn.style.display = "block";
+                }
+                foto.style.opacity = op;
+            }, 100); // 100ms * 100 = 10s
+            // Iniciar typing después de limpiar
+            typingCartaEffect(mensajeCarta, typingCarta, 70, () => {
+                typingDone = true;
+                if (fotoDone) cerrarBtn.style.display = "block";
+            });
+        });
+
+        // Cerrar hoja
+        document.getElementById('cerrar-hoja').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const hoja = document.getElementById('hoja-mensaje');
+            const contenido = document.getElementById('hoja-contenido');
+            contenido.style.transform = 'scaleY(0) translateY(60px)';
+            contenido.style.opacity = '0';
+            setTimeout(() => {
+                hoja.style.pointerEvents = 'none';
+                hoja.style.background = 'transparent';
+                // Restaurar fondo original
+                desactivarFondoAnimado();
+            }, 500);
+        });
+
+        // Opcional: cerrar haciendo click fuera de la hoja
+        document.getElementById('hoja-mensaje').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                document.getElementById('cerrar-hoja').click();
+            }
+        });
+    });
+
+    // Función para crear corazones animados por toda la pantalla (aún más lentos y más cantidad)
+    function brotarCorazones() {
+        const container = document.getElementById('corazones-container');
+        const num = 60 + Math.floor(Math.random() * 20); // aún más corazones
+        for (let i = 0; i < num; i++) {
+            const heart = document.createElement('div');
+            heart.innerHTML = `<svg width="28" height="28" viewBox="0 0 32 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M23.6,2.6c-2.6,0-4.9,1.7-5.6,4.1C16.3,4.3,14,2.6,11.4,2.6C7.4,2.6,4,6,4,10c0,7.1,12,15.4,12,15.4s12-8.3,12-15.4
+                C28,6,24.6,2.6,23.6,2.6z" fill="#ff4081"/>
+            </svg>`;
+            heart.style.position = 'fixed';
+            // Posición inicial aleatoria en la parte inferior de la pantalla
+            const startLeft = Math.random() * 96 + 2; // 2vw a 98vw
+            heart.style.left = `${startLeft}vw`;
+            heart.style.bottom = '-40px';
+            heart.style.opacity = '0.85';
+            heart.style.pointerEvents = 'none';
+            heart.style.transition = 'none';
+            const duration = 5200 + Math.random() * 2200; // mucho más lento
+            const xMove = (Math.random() - 0.5) * 220; // movimiento horizontal
+            const scale = 0.7 + Math.random() * 1.1;
+            heart.animate([
+                { transform: `scale(${scale}) translateY(0px)`, opacity: 0.85 },
+                { transform: `scale(${scale + 0.2}) translateX(${xMove}px) translateY(-60vh)`, opacity: 1, offset: 0.7 },
+                { transform: `scale(${scale + 0.3}) translateX(${xMove}px) translateY(-100vh)`, opacity: 0 }
+            ], {
+                duration: duration,
+                easing: 'cubic-bezier(.4,0,.2,1)'
+            });
+            setTimeout(() => {
+                heart.remove();
+            }, duration);
+            container.appendChild(heart);
+        }
+    }
+
+    // Efecto typing para el contenido de la carta
+    function typingCartaEffect(text, element, delay = 70, onFinish) {
+        element.textContent = "";
+        let i = 0;
+        function type() {
+            if (i < text.length) {
+                element.textContent += text.charAt(i);
+                i++;
+                setTimeout(type, text.charAt(i-1) === '\n' ? delay*8 : delay);
+            } else if (typeof onFinish === "function") {
+                onFinish();
+            }
+        }
+        type();
+    }
+
+    // Agrega animación de fondo degradado
+    function activarFondoAnimado() {
+        document.body.classList.add('fondo-animado-verde');
+        document.body.classList.remove('fondo-animado');
+        // No borres el background aquí, para que la transición se vea suave
+    }
+    function desactivarFondoAnimado() {
+        document.body.classList.remove('fondo-animado-verde');
+        document.body.classList.remove('fondo-animado');
+        // Deja la transición suave al volver al fondo original
+        document.body.style.transition = "background 1.2s cubic-bezier(.77,0,.18,1.01)";
+        document.body.style.background = "";
+    }
+    </script>
+</body>
+</html>
